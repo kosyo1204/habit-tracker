@@ -1,5 +1,4 @@
-
-import { Habit } from '../type/Habit';
+import { type Habit } from '../type/Habit';
 
 // 各アクションのペイロードの型を定義
 // UPDATEのペイロードは、idと更新したいプロパティ（Habitの一部）

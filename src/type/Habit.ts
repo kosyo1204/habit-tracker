@@ -1,18 +1,18 @@
-type HabbitGoal = {
-    ammount: number
+interface HabitGoal {
+    amount: number
     unit: 'times' | 'minutes'
 }
 
-export type Habbit = {
+export interface Habit {
     id: string
     name: string
     type: 'count' | 'check'
-    goal: HabbitGoal
+    goal: HabitGoal
     frequency: 'daily' | 'weekly' | 'monthly'
-    start_at: string
-    end_at: string
-    created_at: string
-    updated_at: string
+    startAt: string
+    endAt: string
+    createdAt: string
+    updatedAt: string
 
     value: number | boolean
     skipped?: boolean

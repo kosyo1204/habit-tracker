@@ -1,8 +1,7 @@
-
 import { describe, it, expect } from 'vitest';
-import { Habit } from '../type/Habit';
+import { type Habit } from '../type/Habit';
 // ReducerとActionをインポート（TDDのため、実装はまだない）
-import { habitReducer, Action } from '../reducers/habitReducer';
+import { habitReducer, type Action } from '../reducers/habitReducer';
 
 describe('habitReducer: 習慣の状態管理ロジック', () => {
   // テスト用の初期状態
@@ -13,8 +12,11 @@ describe('habitReducer: 習慣の状態管理ロジック', () => {
       type: 'count',
       goal: { amount: 10, unit: 'minutes' },
       frequency: 'daily',
-      startDate: '2025-07-01',
+      startAt: '2025-07-01', // 開始日プロパティ名を修正
       value: 0,
+      endAt: '',
+      createdAt: '',
+      updatedAt: ''
     },
     {
       id: '2',
@@ -22,8 +24,11 @@ describe('habitReducer: 習慣の状態管理ロジック', () => {
       type: 'check',
       goal: { amount: 1, unit: 'times' },
       frequency: 'daily',
-      startDate: '2025-07-01',
+      startAt: '2025-07-01',
       value: false,
+      endAt: '',
+      createdAt: '',
+      updatedAt: ''
     },
   ];
 
@@ -34,8 +39,11 @@ describe('habitReducer: 習慣の状態管理ロジック', () => {
       type: 'check',
       goal: { amount: 1, unit: 'times' },
       frequency: 'daily',
-      startDate: '2025-07-09',
+      startAt: '2025-07-09', // 開始日プロパティ名を修正
       value: false,
+      endAt: '',
+      createdAt: '',
+      updatedAt: ''
     };
     const action: Action = { type: 'ADD', payload: newHabit };
     const newState = habitReducer(initialState, action);
@@ -95,10 +103,12 @@ describe('habitReducer: 習慣の状態管理ロジック', () => {
   });
 
   it('UPDATE アクション: 指定したIDの習慣の内容（名前、目標）を更新する', () => {
+    // goalプロパティのキーを 'amount' に修正（正しいスペルに修正）
+    // unitの型を"minutes"と明示的に指定（型エラー回避のため）
     const updates = {
       id: '1',
       name: '朝の読書', // 名前を変更
-      goal: { amount: 20, unit: 'minutes' }, // 目標を変更
+      goal: { amount: 20, unit: 'minutes' as 'minutes' }, // 目標を変更
     };
     const action: Action = { type: 'UPDATE', payload: updates };
     const newState = habitReducer(initialState, action);
