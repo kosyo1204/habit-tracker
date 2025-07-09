@@ -1,0 +1,114 @@
+
+import { describe, it, expect } from 'vitest';
+import { Habit } from '../type/Habit';
+// ReducerとActionをインポート（TDDのため、実装はまだない）
+import { habitReducer, Action } from '../reducers/habitReducer';
+
+describe('habitReducer: 習慣の状態管理ロジック', () => {
+  // テスト用の初期状態
+  const initialState: Habit[] = [
+    {
+      id: '1',
+      name: '読書',
+      type: 'count',
+      goal: { amount: 10, unit: 'minutes' },
+      frequency: 'daily',
+      startDate: '2025-07-01',
+      value: 0,
+    },
+    {
+      id: '2',
+      name: '運動',
+      type: 'check',
+      goal: { amount: 1, unit: 'times' },
+      frequency: 'daily',
+      startDate: '2025-07-01',
+      value: false,
+    },
+  ];
+
+  it('ADD アクション: 新しい習慣をリストに追加する', () => {
+    const newHabit: Habit = {
+      id: '3',
+      name: '瞑想',
+      type: 'check',
+      goal: { amount: 1, unit: 'times' },
+      frequency: 'daily',
+      startDate: '2025-07-09',
+      value: false,
+    };
+    const action: Action = { type: 'ADD', payload: newHabit };
+    const newState = habitReducer(initialState, action);
+
+    // TODO: Reducer実装後、このテストが通るようにする
+    expect(newState).toHaveLength(3);
+    expect(newState[2]).toEqual(newHabit);
+  });
+
+  it('DELETE アクション: 指定したIDの習慣をリストから削除する', () => {
+    const action: Action = { type: 'DELETE', payload: { id: '1' } };
+    const newState = habitReducer(initialState, action);
+
+    // TODO: Reducer実装後、このテストが通るようにする
+    expect(newState).toHaveLength(1);
+    expect(newState.find(h => h.id === '1')).toBeUndefined();
+  });
+
+  it('INCREMENT アクション: カウント型の習慣の実績値を+1する', () => {
+    const action: Action = { type: 'INCREMENT', payload: { id: '1' } };
+    const newState = habitReducer(initialState, action);
+    const targetHabit = newState.find(h => h.id === '1');
+
+    // TODO: Reducer実装後、このテストが通るようにする
+    // valueはnumber型であると想定
+    expect(typeof targetHabit?.value).toBe('number');
+    if (typeof targetHabit?.value === 'number') {
+      expect(targetHabit.value).toBe(1);
+    }
+  });
+
+  it('TOGGLE アクション: チェック型の習慣の完了状態をトグルする', () => {
+    const action: Action = { type: 'TOGGLE', payload: { id: '2' } };
+    
+    // 1回目のトグル (false -> true)
+    const newState1 = habitReducer(initialState, action);
+    const targetHabit1 = newState1.find(h => h.id === '2');
+    
+    // TODO: Reducer実装後、このテストが通るようにする
+    expect(targetHabit1?.value).toBe(true);
+
+    // 2回目のトグル (true -> false)
+    const newState2 = habitReducer(newState1, action);
+    const targetHabit2 = newState2.find(h => h.id === '2');
+
+    // TODO: Reducer実装後、このテストが通るようにする
+    expect(targetHabit2?.value).toBe(false);
+  });
+
+  it('SKIP アクション: 指定したIDの習慣をスキップ扱いにし、skippedフラグをtrueにする', () => {
+    const action: Action = { type: 'SKIP', payload: { id: '1' } };
+    const newState = habitReducer(initialState, action);
+    const targetHabit = newState.find(h => h.id === '1');
+
+    // TODO: Reducer実装後、このテストが通るようにする
+    expect(targetHabit?.skipped).toBe(true);
+  });
+
+  it('UPDATE アクション: 指定したIDの習慣の内容（名前、目標）を更新する', () => {
+    const updates = {
+      id: '1',
+      name: '朝の読書', // 名前を変更
+      goal: { amount: 20, unit: 'minutes' }, // 目標を変更
+    };
+    const action: Action = { type: 'UPDATE', payload: updates };
+    const newState = habitReducer(initialState, action);
+    const targetHabit = newState.find(h => h.id === '1');
+
+    // TODO: Reducer実装後、このテストが通るようにする
+    expect(targetHabit?.name).toBe('朝の読書');
+    expect(targetHabit?.goal.amount).toBe(20);
+    expect(targetHabit?.goal.unit).toBe('minutes');
+    // 更新されていないプロパティは元のままであることを確認
+    expect(targetHabit?.type).toBe('count');
+  });
+});

@@ -3,7 +3,7 @@ type HabbitGoal = {
     unit: 'times' | 'minutes'
 }
 
-type Habbit = {
+export type Habbit = {
     id: string
     name: string
     type: 'count' | 'check'
