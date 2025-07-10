@@ -12,7 +12,7 @@ describe('habitReducer: 習慣の状態管理ロジック', () => {
       type: 'count',
       goal: { amount: 10, unit: 'minutes' },
       frequency: 'daily',
-      startAt: '2025-07-01', // 開始日プロパティ名を修正
+      startAt: '2025-07-01',
       value: 0,
       endAt: '',
       createdAt: '',
