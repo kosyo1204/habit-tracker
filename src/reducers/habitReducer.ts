@@ -28,12 +28,14 @@ export type Action =
 export const habitReducer = (state: Habit[], action: Action): Habit[] => {
   switch (action.type) {
     case 'ADD':
-      const now = getNowISOString(); // 日時にズレが生じさせないため
-      const newHabit = { ...action.payload, id: uuidv4(), createdAt: now, updatedAt: now };
-      return [...state, newHabit];
-    // case 'DELETE':
-    //   // TODO: 実装
-    //   break;
+      const now = getNowISOString() // 日時にズレが生じさせないため
+      const newHabit = { ...action.payload, id: uuidv4(), createdAt: now, updatedAt: now }
+      return [...state, newHabit]
+    case 'DELETE':
+      const filteredState = state.filter(habit => habit.id !== action.payload.id);
+      return filteredState;
+    case 'INCREMENT':
+      
     default:
       return state;
   }

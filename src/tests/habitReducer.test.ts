@@ -61,7 +61,6 @@ describe('habitReducer: 習慣の状態管理ロジック', () => {
     const action: Action = { type: 'DELETE', payload: { id: '1' } };
     const newState = habitReducer(initialState, action);
 
-    // TODO: Reducer実装後、このテストが通るようにする
     expect(newState).toHaveLength(1);
     expect(newState.find(h => h.id === '1')).toBeUndefined();
   });
