@@ -4,7 +4,6 @@ import { type Habit } from '../type/Habit';
 import { habitReducer, type Action } from '../reducers/habitReducer';
 
 describe('habitReducer: 習慣の状態管理ロジック', () => {
-  // テスト用の初期状態
   const initialState: Habit[] = [
     {
       id: '1',
@@ -15,8 +14,8 @@ describe('habitReducer: 習慣の状態管理ロジック', () => {
       startAt: '2025-07-01',
       value: 0,
       endAt: '',
-      createdAt: '',
-      updatedAt: ''
+      createdAt: '2025-06-30T08:00:00.000Z',
+      updatedAt: '2025-07-01T00:00:00.000Z'
     },
     {
       id: '2',
@@ -27,30 +26,35 @@ describe('habitReducer: 習慣の状態管理ロジック', () => {
       startAt: '2025-07-01',
       value: false,
       endAt: '',
-      createdAt: '',
-      updatedAt: ''
+      createdAt: '2025-06-29T12:00:00.000Z',
+      updatedAt: '2025-07-01T00:00:00.000Z'
     },
   ];
 
   it('ADD アクション: 新しい習慣をリストに追加する', () => {
-    const newHabit: Habit = {
-      id: '3',
+    // id, createdAt, updatedAtはreducer側で自動生成されることを確認
+    const newHabit: Omit<Habit, 'id' | 'createdAt' | 'updatedAt'> = {
       name: '瞑想',
       type: 'check',
       goal: { amount: 1, unit: 'times' },
       frequency: 'daily',
-      startAt: '2025-07-09', // 開始日プロパティ名を修正
+      startAt: '2025-07-09',
       value: false,
-      endAt: '',
-      createdAt: '',
-      updatedAt: ''
+      endAt: ''
     };
-    const action: Action = { type: 'ADD', payload: newHabit };
+    const action: Action = { type: 'ADD', payload: newHabit as Habit };
     const newState = habitReducer(initialState, action);
 
-    // TODO: Reducer実装後、このテストが通るようにする
     expect(newState).toHaveLength(3);
-    expect(newState[2]).toEqual(newHabit);
+    // id, createdAt, updatedAt以外のプロパティが一致することを確認
+    expect(newState[2]).toMatchObject(newHabit);
+    // id, createdAt, updatedAtが自動生成されていることを確認
+    expect(typeof newState[2].id).toBe('string');
+    expect(newState[2].id).not.toBe('');
+    expect(typeof newState[2].createdAt).toBe('string');
+    expect(newState[2].createdAt).not.toBe('');
+    expect(typeof newState[2].updatedAt).toBe('string');
+    expect(newState[2].updatedAt).not.toBe('');
   });
 
   it('DELETE アクション: 指定したIDの習慣をリストから削除する', () => {
@@ -108,7 +112,7 @@ describe('habitReducer: 習慣の状態管理ロジック', () => {
     const updates = {
       id: '1',
       name: '朝の読書', // 名前を変更
-      goal: { amount: 20, unit: 'minutes' as 'minutes' }, // 目標を変更
+      goal: { amount: 20, unit: 'minutes' as 'minutes' },
     };
     const action: Action = { type: 'UPDATE', payload: updates };
     const newState = habitReducer(initialState, action);

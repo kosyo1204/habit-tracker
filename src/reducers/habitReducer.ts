@@ -1,4 +1,7 @@
 import { type Habit } from '../type/Habit';
+// uuidライブラリをインポート
+import { v4 as uuidv4 } from 'uuid';
+import { getNowISOString } from '../utils/date';
 
 // 各アクションのペイロードの型を定義
 // UPDATEのペイロードは、idと更新したいプロパティ（Habitの一部）
@@ -17,23 +20,20 @@ export type Action =
 
 /**
  * 習慣の状態を更新するreducer関数
+ * ビュー側（Reactコンポーネント）でuseReducer(habitReducer, 初期値)と使う予定 
  * @param state 現在の習慣リスト
  * @param action 実行するアクション
  * @returns 更新後の習慣リスト
  */
 export const habitReducer = (state: Habit[], action: Action): Habit[] => {
-  // TODO: 各アクションに対応するロジックを実装する
-  // このスイッチ文を実装することで、テストが通るようになります。
   switch (action.type) {
-    /*
     case 'ADD':
-      // TODO: 実装
-      break;
-    case 'DELETE':
-      // TODO: 実装
-      break;
-    // 他のケースも同様に実装
-    */
+      const now = getNowISOString(); // 日時にズレが生じさせないため
+      const newHabit = { ...action.payload, id: uuidv4(), createdAt: now, updatedAt: now };
+      return [...state, newHabit];
+    // case 'DELETE':
+    //   // TODO: 実装
+    //   break;
     default:
       return state;
   }
