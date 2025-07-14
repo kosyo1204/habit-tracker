@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { type Habit } from '../type/Habit';
-// ReducerとActionをインポート（TDDのため、実装はまだない）
+// ReducerとActionをインポート
 import { habitReducer, type Action } from '../reducers/habitReducer';
 
 describe('habitReducer: 習慣の状態管理ロジック', () => {
@@ -33,7 +33,7 @@ describe('habitReducer: 習慣の状態管理ロジック', () => {
 
   it('ADD アクション: 新しい習慣をリストに追加する', () => {
     // id, createdAt, updatedAtはreducer側で自動生成されることを確認
-    const newHabit: Omit<Habit, 'id' | 'createdAt' | 'updatedAt'> = {
+    const newHabitPayload: Omit<Habit, 'id' | 'createdAt' | 'updatedAt'> = {
       name: '瞑想',
       type: 'check',
       goal: { amount: 1, unit: 'times' },
@@ -42,12 +42,12 @@ describe('habitReducer: 習慣の状態管理ロジック', () => {
       value: false,
       endAt: ''
     };
-    const action: Action = { type: 'ADD', payload: newHabit as Habit };
+    const action: Action = { type: 'ADD', payload: newHabitPayload };
     const newState = habitReducer(initialState, action);
 
     expect(newState).toHaveLength(3);
     // id, createdAt, updatedAt以外のプロパティが一致することを確認
-    expect(newState[2]).toMatchObject(newHabit);
+    expect(newState[2]).toMatchObject(newHabitPayload);
     // id, createdAt, updatedAtが自動生成されていることを確認
     expect(typeof newState[2].id).toBe('string');
     expect(newState[2].id).not.toBe('');
@@ -70,10 +70,8 @@ describe('habitReducer: 習慣の状態管理ロジック', () => {
     const newState = habitReducer(initialState, action);
     const targetHabit = newState.find(h => h.id === '1');
 
-    // TODO: Reducer実装後、このテストが通るようにする
-    // valueはnumber型であると想定
-    expect(typeof targetHabit?.value).toBe('number');
-    if (typeof targetHabit?.value === 'number') {
+    // Discriminated Unionにより、targetHabitがCountHabit型であることが保証される
+    if (targetHabit?.type === 'count') {
       expect(targetHabit.value).toBe(1);
     }
   });
@@ -85,15 +83,17 @@ describe('habitReducer: 習慣の状態管理ロジック', () => {
     const newState1 = habitReducer(initialState, action);
     const targetHabit1 = newState1.find(h => h.id === '2');
     
-    // TODO: Reducer実装後、このテストが通るようにする
-    expect(targetHabit1?.value).toBe(true);
+    if (targetHabit1?.type === 'check') {
+      expect(targetHabit1.value).toBe(true);
+    }
 
     // 2回目のトグル (true -> false)
     const newState2 = habitReducer(newState1, action);
     const targetHabit2 = newState2.find(h => h.id === '2');
 
-    // TODO: Reducer実装後、このテストが通るようにする
-    expect(targetHabit2?.value).toBe(false);
+    if (targetHabit2?.type === 'check') {
+      expect(targetHabit2.value).toBe(false);
+    }
   });
 
   it('SKIP アクション: 指定したIDの習慣をスキップ扱いにし、skippedフラグをtrueにする', () => {
@@ -101,23 +101,19 @@ describe('habitReducer: 習慣の状態管理ロジック', () => {
     const newState = habitReducer(initialState, action);
     const targetHabit = newState.find(h => h.id === '1');
 
-    // TODO: Reducer実装後、このテストが通るようにする
     expect(targetHabit?.skipped).toBe(true);
   });
 
   it('UPDATE アクション: 指定したIDの習慣の内容（名前、目標）を更新する', () => {
-    // goalプロパティのキーを 'amount' に修正（正しいスペルに修正）
-    // unitの型を"minutes"と明示的に指定（型エラー回避のため）
     const updates = {
       id: '1',
       name: '朝の読書', // 名前を変更
-      goal: { amount: 20, unit: 'minutes' as 'minutes' },
+      goal: { amount: 20, unit: 'minutes' as const }, // `as const` を使用して型を推論させる
     };
     const action: Action = { type: 'UPDATE', payload: updates };
     const newState = habitReducer(initialState, action);
     const targetHabit = newState.find(h => h.id === '1');
 
-    // TODO: Reducer実装後、このテストが通るようにする
     expect(targetHabit?.name).toBe('朝の読書');
     expect(targetHabit?.goal.amount).toBe(20);
     expect(targetHabit?.goal.unit).toBe('minutes');

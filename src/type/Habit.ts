@@ -1,19 +1,32 @@
 interface HabitGoal {
-  amount: number
-  unit: 'times' | 'minutes'
+  amount: number;
+  unit: 'times' | 'minutes';
 }
 
-export interface Habit {
-  id: string
-  name: string
-  type: 'count' | 'check'
-  goal: HabitGoal
-  frequency: 'daily' | 'weekly' | 'monthly'
-  startAt: string
-  endAt: string
-  createdAt: string
-  updatedAt: string
-
-  value: number | boolean
-  skipped?: boolean
+// 共通のプロパティを持つ基本のHabitインターフェース
+interface HabitBase {
+  id: string;
+  name: string;
+  goal: HabitGoal;
+  frequency: 'daily' | 'weekly' | 'monthly';
+  startAt: string;
+  endAt: string;
+  createdAt: string;
+  updatedAt: string;
+  skipped?: boolean;
 }
+
+// typeが'count'の場合のHabit
+interface CountHabit extends HabitBase {
+  type: 'count';
+  value: number;
+}
+
+// typeが'check'の場合のHabit
+interface CheckHabit extends HabitBase {
+  type: 'check';
+  value: boolean;
+}
+
+// Discriminated UnionとしてHabit型を定義
+export type Habit = CountHabit | CheckHabit;
