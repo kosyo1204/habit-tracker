@@ -32,8 +32,9 @@ describe('habitReducer: 習慣の状態管理ロジック', () => {
   ];
 
   it('ADD アクション: 新しい習慣をリストに追加する', () => {
-    // id, createdAt, updatedAtはreducer側で自動生成されることを確認
-    const newHabitPayload: Omit<Habit, 'id' | 'createdAt' | 'updatedAt'> = {
+    // id, createdAt, updatedAtはreducer側で自動生成
+    // 'type'が'check'の場合はCheckHabit用、'count'の場合はCountHabit用のpayload型を明示
+    const newHabitPayload: Omit<import('../type/Habit').CheckHabit, 'id' | 'createdAt' | 'updatedAt'> = {
       name: '瞑想',
       type: 'check',
       goal: { amount: 1, unit: 'times' },
@@ -42,6 +43,7 @@ describe('habitReducer: 習慣の状態管理ロジック', () => {
       value: false,
       endAt: ''
     };
+    // payload型を明示することで型エラーを回避
     const action: Action = { type: 'ADD', payload: newHabitPayload };
     const newState = habitReducer(initialState, action);
 

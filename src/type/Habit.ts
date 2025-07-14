@@ -17,13 +17,13 @@ interface HabitBase {
 }
 
 // typeが'count'の場合のHabit
-interface CountHabit extends HabitBase {
+export interface CountHabit extends HabitBase {
   type: 'count';
   value: number;
 }
 
 // typeが'check'の場合のHabit
-interface CheckHabit extends HabitBase {
+export interface CheckHabit extends HabitBase {
   type: 'check';
   value: boolean;
 }

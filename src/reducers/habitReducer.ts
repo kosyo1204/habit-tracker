@@ -1,4 +1,4 @@
-import { type Habit } from '../type/Habit';
+import { type Habit, type CountHabit, type CheckHabit } from '../type/Habit';
 // uuidライブラリをインポート
 import { v4 as uuidv4 } from 'uuid';
 import { getNowISOString } from '../utils/date';
@@ -6,12 +6,11 @@ import { getNowISOString } from '../utils/date';
 // 各アクションのペイロードの型を定義
 
 // ADDアクションのペイロードは、reducerで生成されるプロパティを除いたもの
-type AddPayload = Omit<Habit, 'id' | 'createdAt' | 'updatedAt'>;
+type AddPayload = Omit<CountHabit, 'id' | 'createdAt' | 'updatedAt'> | Omit<CheckHabit, 'id' | 'createdAt' | 'updatedAt'>;
 
 // UPDATEのペイロードは、idと更新したいプロパティ（Habitの一部）
-// 注意: この定義では、'check'タイプのhabitに数値のvalueを渡すなど、
-// 型の整合性が崩れる更新が可能です。reducerや呼び出し側での注意が必要です。
-type UpdatePayload = Partial<Habit> & { id: string };
+// typeとvalueは直接UPDATEしない想定
+type UpdatePayload = Partial<Omit<Habit, 'type' | 'value'>> & { id: string };
 
 
 // Actionの型をユニオンで定義
@@ -36,14 +35,14 @@ export const habitReducer = (state: Habit[], action: Action): Habit[] => {
   switch (action.type) {
     case 'ADD': {
       // TODO: payloadのバリデーションを追加する
-      // Habit型がDiscriminated Unionになったため、型アサーションを追加してコンパイルエラーを回避
-      const newHabit = {
-        ...action.payload,
-        id: uuidv4(),
-        createdAt: now,
-        updatedAt: now,
-      } as Habit;
-      return [...state, newHabit];
+      // 新しい習慣を生成し、型アサーションでHabit型であることを保証
+            const newHabit = {
+              ...action.payload,
+              id: uuidv4(),
+              createdAt: now,
+              updatedAt: now,
+            } as Habit;
+            return [...state, newHabit];
     }
     case 'DELETE':
       return state.filter(habit => habit.id !== action.payload.id);
