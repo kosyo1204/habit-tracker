@@ -23,7 +23,7 @@ describe('Habbit', () => {
       id: 'dummy-id',
       createdAt: now,
       updatedAt: now,
-    };
+    } as Habit;
 
     expect(typeof habit).toBe('object');
     expect(habit.name).toBe('読書する');
