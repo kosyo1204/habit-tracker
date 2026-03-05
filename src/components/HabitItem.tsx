@@ -24,14 +24,14 @@ export function HabitItem({ habit, onIncrement, onToggle, onDelete, onSkip }: Ha
       {habit.type === 'count' && (
         <span>
           <span>{habit.value}</span>
-          <button onClick={() => onIncrement(habit.id)} aria-label="+">+</button>
+          <button onClick={() => onIncrement(habit.id)} aria-label="回数を増やす">+</button>
         </span>
       )}
 
       {habit.type === 'check' && (
         <button
           onClick={() => onToggle(habit.id)}
-          aria-label="✓"
+          aria-label={habit.value ? '未完了にする' : '完了にする'}
           aria-pressed={habit.value}
         >
           ✓
@@ -42,7 +42,7 @@ export function HabitItem({ habit, onIncrement, onToggle, onDelete, onSkip }: Ha
       {habit.skipped && <span>スキップ済み</span>}
 
       <button onClick={() => onSkip(habit.id)}>スキップ</button>
-      <button onClick={() => onDelete(habit.id)} aria-label="🗑">🗑</button>
+      <button onClick={() => onDelete(habit.id)} aria-label="削除">🗑</button>
     </li>
   );
 }

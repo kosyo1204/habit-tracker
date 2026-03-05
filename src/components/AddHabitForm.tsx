@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, type FormEvent } from 'react';
 import type { CountHabit, CheckHabit } from '../type/Habit';
 
 // AddHabitFormが送信するペイロードの型（idとcreatedAt・updatedAtはReducerで生成）
@@ -15,6 +15,18 @@ const DEFAULT_GOAL_UNIT = 'times' as const;
 const DEFAULT_FREQUENCY = 'daily' as const;
 
 /**
+ * ローカルタイムゾーンでの今日の日付を YYYY-MM-DD 形式で取得
+ * タイムゾーンによる日付のずれを防ぐため、toISOString ではなくローカル日付を使用
+ */
+function getLocalDateString(): string {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+/**
  * 習慣を新規追加するフォームコンポーネント
  * 送信時にonAddコールバックを呼び出し、フォームをリセットする
  */
@@ -25,9 +37,9 @@ export function AddHabitForm({ onAdd }: AddHabitFormProps) {
   const [goalUnit, setGoalUnit] = useState<'times' | 'minutes'>(DEFAULT_GOAL_UNIT);
   const [frequency, setFrequency] = useState<'daily' | 'weekly' | 'monthly'>(DEFAULT_FREQUENCY);
   // 開始日のデフォルトは今日（コンポーネントマウント時に一度だけ計算）
-  const [startAt, setStartAt] = useState(() => new Date().toISOString().split('T')[0]);
+  const [startAt, setStartAt] = useState(() => getLocalDateString());
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
 
     // 習慣名が空の場合は何もしない
@@ -55,7 +67,7 @@ export function AddHabitForm({ onAdd }: AddHabitFormProps) {
     setGoalAmount(DEFAULT_GOAL_AMOUNT);
     setGoalUnit(DEFAULT_GOAL_UNIT);
     setFrequency(DEFAULT_FREQUENCY);
-    setStartAt(new Date().toISOString().split('T')[0]);
+    setStartAt(getLocalDateString());
   };
 
   return (
@@ -82,7 +94,21 @@ export function AddHabitForm({ onAdd }: AddHabitFormProps) {
         type="number"
         min={1}
         value={goalAmount}
-        onChange={(e) => setGoalAmount(Number(e.target.value))}
+        onChange={(e) => {
+          const value = e.target.value;
+          // 空文字の場合はデフォルト値に戻す
+          if (value === '') {
+            setGoalAmount(DEFAULT_GOAL_AMOUNT);
+            return;
+          }
+          const parsed = Number(value);
+          // NaN の場合は何もしない
+          if (Number.isNaN(parsed)) {
+            return;
+          }
+          // 最小値1でクランプ
+          setGoalAmount(Math.max(1, parsed));
+        }}
         aria-label="目標数値"
       />
 

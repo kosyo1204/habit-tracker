@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import type { Habit } from '../type/Habit';
 import { HabitList } from '../components/HabitList';
 
@@ -73,7 +73,11 @@ describe('HabitList: 習慣リストの表示', () => {
     );
 
     // 削除ボタンが2つ表示されていることを確認（各HabitItemに1つ）
-    const deleteButtons = screen.getAllByRole('button', { name: /🗑/ });
+    const deleteButtons = screen.getAllByRole('button', { name: '削除' });
     expect(deleteButtons).toHaveLength(2);
+
+    // 最初の削除ボタンをクリックしてonDeleteが呼ばれることを確認
+    fireEvent.click(deleteButtons[0]);
+    expect(onDelete).toHaveBeenCalledWith('1');
   });
 });

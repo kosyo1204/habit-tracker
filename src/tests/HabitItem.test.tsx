@@ -44,7 +44,7 @@ describe('HabitItem: 習慣アイテムの表示と操作', () => {
     const onIncrement = vi.fn();
     render(<HabitItem habit={countHabit} onIncrement={onIncrement} onToggle={() => {}} onDelete={() => {}} onSkip={() => {}} />);
 
-    const incrementButton = screen.getByRole('button', { name: /\+/ });
+    const incrementButton = screen.getByRole('button', { name: '回数を増やす' });
     fireEvent.click(incrementButton);
 
     expect(onIncrement).toHaveBeenCalledWith('1');
@@ -60,7 +60,7 @@ describe('HabitItem: 習慣アイテムの表示と操作', () => {
     const onToggle = vi.fn();
     render(<HabitItem habit={checkHabit} onIncrement={() => {}} onToggle={onToggle} onDelete={() => {}} onSkip={() => {}} />);
 
-    const toggleButton = screen.getByRole('button', { name: /✓/ });
+    const toggleButton = screen.getByRole('button', { name: '完了にする' });
     fireEvent.click(toggleButton);
 
     expect(onToggle).toHaveBeenCalledWith('2');
@@ -70,7 +70,7 @@ describe('HabitItem: 習慣アイテムの表示と操作', () => {
     const onDelete = vi.fn();
     render(<HabitItem habit={countHabit} onIncrement={() => {}} onToggle={() => {}} onDelete={onDelete} onSkip={() => {}} />);
 
-    const deleteButton = screen.getByRole('button', { name: /🗑/ });
+    const deleteButton = screen.getByRole('button', { name: '削除' });
     fireEvent.click(deleteButton);
 
     expect(onDelete).toHaveBeenCalledWith('1');
