@@ -1,34 +1,51 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { useReducer } from 'react'
+import { habitReducer } from './reducers/habitReducer'
+import type { Action } from './reducers/habitReducer'
+import { HabitList } from './components/HabitList'
+import { AddHabitForm } from './components/AddHabitForm'
+import type { CountHabit, CheckHabit } from './type/Habit'
 import './App.css'
 
+// AddHabitFormが送信するペイロードの型
+type AddPayload = Omit<CountHabit, 'id' | 'createdAt' | 'updatedAt'> | Omit<CheckHabit, 'id' | 'createdAt' | 'updatedAt'>
+
 function App() {
-  const [count, setCount] = useState(0)
+  // useReducerで習慣リストの状態を管理
+  const [habits, dispatch] = useReducer(habitReducer, [])
+
+  const handleAdd = (payload: AddPayload) => {
+    const action: Action = { type: 'ADD', payload }
+    dispatch(action)
+  }
+
+  const handleIncrement = (id: string) => {
+    dispatch({ type: 'INCREMENT', payload: { id } })
+  }
+
+  const handleToggle = (id: string) => {
+    dispatch({ type: 'TOGGLE', payload: { id } })
+  }
+
+  const handleDelete = (id: string) => {
+    dispatch({ type: 'DELETE', payload: { id } })
+  }
+
+  const handleSkip = (id: string) => {
+    dispatch({ type: 'SKIP', payload: { id } })
+  }
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <div>
+      <h1>習慣トラッカー</h1>
+      <HabitList
+        habits={habits}
+        onIncrement={handleIncrement}
+        onToggle={handleToggle}
+        onDelete={handleDelete}
+        onSkip={handleSkip}
+      />
+      <AddHabitForm onAdd={handleAdd} />
+    </div>
   )
 }
 
